@@ -8,6 +8,7 @@ import java.util.Comparator;
  * @param <T>
  *   The types of values that are sorted.
  *
+ * @author David William Stroud
  * @author Samuel A. Rebelsky
  */
 
@@ -41,6 +42,42 @@ public class Quicksorter<T> implements Sorter<T> {
   // +---------+
 
   /**
+   * Sorts a slice of an array in place.
+   * @param values The full array to sort.
+   * @param start The first index to sort, inclusive.
+   * @param end The last index to sort, exclusive.
+   */
+  private void sortSlice(T[] values, int start, int end) {
+    if ((end - start) < 2) {
+      // This slice is already sorted, since it either has
+      // one or zero elements.
+      return;
+    } // if
+
+    T pivot = values[start / 2 + end / 2];
+    int startEqual = start;
+    int startGt = end;
+    for (int index = start; index < startGt; ) {
+      int comparison = this.order.compare(values[index], pivot);
+      if (comparison < 0) {
+        T inEqual = values[startEqual];
+        values[startEqual++] = values[index];
+        values[index++] = inEqual;
+      } else if (comparison > 0) {
+        T inUnprocessed = values[--startGt];
+        values[startGt] = values[index];
+        values[index] = inUnprocessed;
+      } else {
+        // The pivot is equal to the value.
+        index++;
+      }
+    } // for
+
+    this.sortSlice(values, start, startEqual);
+    this.sortSlice(values, startGt, end);
+  } // sortSlice(T[], int, int)
+
+  /**
    * Sort an array in place using Quicksort.
    *
    * @param values
@@ -55,6 +92,6 @@ public class Quicksorter<T> implements Sorter<T> {
    */
   @Override
   public void sort(T[] values) {
-    // STUB
+    this.sortSlice(values, 0, values.length);
   } // sort(T[])
 } // class Quicksorter
