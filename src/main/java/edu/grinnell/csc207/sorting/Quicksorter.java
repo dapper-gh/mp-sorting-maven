@@ -57,7 +57,7 @@ public class Quicksorter<T> implements Sorter<T> {
     T pivot = values[start / 2 + end / 2];
     int startEqual = start;
     int startGt = end;
-    for (int index = start; index < startGt; ) {
+    for (int index = start; index < startGt;) {
       int comparison = this.order.compare(values[index], pivot);
       if (comparison < 0) {
         T inEqual = values[startEqual];
@@ -70,7 +70,7 @@ public class Quicksorter<T> implements Sorter<T> {
       } else {
         // The pivot is equal to the value.
         index++;
-      }
+      } // if-else
     } // for
 
     this.sortSlice(values, start, startEqual);

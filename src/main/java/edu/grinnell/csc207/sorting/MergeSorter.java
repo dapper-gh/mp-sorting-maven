@@ -46,6 +46,8 @@ public class MergeSorter<T> implements Sorter<T> {
    * @param values The full array to sort.
    * @param start The first index to sort, inclusive.
    * @param end The last index to sort, exclusive.
+   *
+   * @return A new, sorted array.
    */
   @SuppressWarnings({ "unchecked" })
   private T[] sortSlice(T[] values, int start, int end) {
