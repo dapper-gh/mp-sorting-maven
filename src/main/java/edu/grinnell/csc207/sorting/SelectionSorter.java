@@ -8,6 +8,7 @@ import java.util.Comparator;
  * @param <T>
  *   The types of values that are sorted.
  *
+ * @author David William Stroud
  * @author Samuel A. Rebelsky
  */
 
@@ -55,6 +56,19 @@ public class SelectionSorter<T> implements Sorter<T> {
    */
   @Override
   public void sort(T[] values) {
-    // STUB
+    // We only need to go to values.length - 1,
+    // since if there is only one unsorted element at the end,
+    // the array is sorted.
+    for (int unprocessedStart = 0; unprocessedStart < values.length - 1; unprocessedStart++) {
+      int min = unprocessedStart;
+      for (int candidate = unprocessedStart + 1; candidate < values.length; candidate++) {
+        if (this.order.compare(values[min], values[candidate]) > 0) {
+          min = candidate;
+        } // if
+      } // for
+      T oldValue = values[unprocessedStart];
+      values[unprocessedStart] = values[min];
+      values[min] = oldValue;
+    } // for
   } // sort(T[])
 } // class SelectionSorter
