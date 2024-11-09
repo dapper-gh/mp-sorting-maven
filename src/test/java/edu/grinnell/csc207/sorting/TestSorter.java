@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Test;
  * Rather, you should subclass it and initialize stringSorter and
  * intSorter in a static @BeforeAll method.
  *
- * @author Your Name
- * @uathor Samuel A. Rebelsky
+ * @author David William Stroud
+ * @author Samuel A. Rebelsky
  */
 public class TestSorter {
 
@@ -120,4 +120,81 @@ public class TestSorter {
     ArrayUtils.permute(original);
     assertSorts(expected, original, intSorter);
   } // permutedIntegers
+
+  // +----------------------+----------------------------------------
+  // | David Stroud's Tests |
+  // +----------------------+
+
+  /**
+   * Ensure that the empty array is sorted without issues (i.e. not modified).
+   */
+  @Test
+  public void testEmpty() {
+    this.assertSorts(new String[] {}, new String[] {}, TestSorter.stringSorter);
+    this.assertSorts(new Integer[] {}, new Integer[] {}, TestSorter.intSorter);
+  } // testEmpty()
+
+  /**
+   * Ensure that an array of length one is sorted without issues (i.e. not modified).
+   */
+  @Test
+  public void testOneLength() {
+    this.assertSorts(new String[] {"hello"}, new String[] {"hello"}, stringSorter);
+    this.assertSorts(new Integer[] {0}, new Integer[] {0}, intSorter);
+  } // testOneLength()
+
+  /**
+   * Ensure that equal elements are bunched together in sorted arrays.
+   */
+  @Test
+  public void testEqualBunching() {
+    for (int a = -100; a < 100; a++) {
+      for (int b = a + 1; b < 100; b++) {
+        for (int c = b + 1; c < 100; c++) {
+          Integer[] sorted = new Integer[] {a, b, b, c};
+
+          this.assertSorts(sorted, new Integer[] {c, b, b, a}, intSorter);
+          this.assertSorts(sorted, new Integer[] {a, b, b, c}, intSorter);
+          this.assertSorts(sorted, new Integer[] {b, c, a, b}, intSorter);
+          this.assertSorts(sorted, new Integer[] {a, b, c, b}, intSorter);
+          this.assertSorts(sorted, new Integer[] {c, a, b, b}, intSorter);
+        } // for
+      } // for
+    } // for
+  } // testEqualBunching()
+
+  /**
+   * Ensure that a very large array (20k elements) is sorted correctly.
+   */
+  @Test
+  public void testVeryLargeArray() {
+    Integer[] sorted = new Integer[20000];
+    for (int i = 0; i < sorted.length; i++) {
+      sorted[i] = i * 3 - 200;
+    } // for
+    Integer[] permuted = new Integer[sorted.length];
+    for (int i = 0; i < permuted.length; i++) {
+      // Since 531 and 20k are coprime, this will always get a new index.
+      permuted[i] = sorted[(i * 531) % sorted.length];
+    } // for
+    this.assertSorts(sorted, permuted, intSorter);
+  } // testVeryLargeArray()
+
+  /**
+   * Ensure that an array of stringified integers is sorted correctly.
+   */
+  @Test
+  public void testStringifiedIntegers() {
+    // Maybe one less than a power of two will catch a bug.
+    String[] sorted = new String[63];
+    for (int i = 0; i < sorted.length; i++) {
+      sorted[i] = Integer.valueOf(i / 10).toString() + Integer.valueOf(i % 10).toString();
+    } // for
+    String[] permuted = new String[sorted.length];
+    for (int i = 0; i < permuted.length; i++) {
+      // Since 15 and 31 are coprime, this will always get a new index.
+      permuted[i] = sorted[(i * 15) % sorted.length];
+    } // for
+    this.assertSorts(sorted, permuted, stringSorter);
+  }
 } // class TestSorter
