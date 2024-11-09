@@ -192,8 +192,8 @@ public class TestSorter {
     } // for
     String[] permuted = new String[sorted.length];
     for (int i = 0; i < permuted.length; i++) {
-      // Since 15 and 31 are coprime, this will always get a new index.
-      permuted[i] = sorted[(i * 15) % sorted.length];
+      // Since 31 and 63 are coprime, this will always get a new index.
+      permuted[i] = sorted[(i * 31) % sorted.length];
     } // for
     this.assertSorts(sorted, permuted, stringSorter);
   }
