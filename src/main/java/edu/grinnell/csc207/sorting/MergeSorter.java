@@ -1,5 +1,6 @@
 package edu.grinnell.csc207.sorting;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -42,30 +43,31 @@ public class MergeSorter<T> implements Sorter<T> {
   // +---------+
 
   /**
-   * Merges two sorted arrays into one.
-   * @param firstSlice The first array to merge.
-   * @param secondSlice The second array to merge.
-   * @return A sorted array composed of all the elements from each array.
+   * Merges two sorted sub-arrays into one.
+   * @param values The input array to use.
+   * @param output The output array to use.
+   *               The sorted values will be placed at the indices [start, end).
+   * @param start The first index of the first sub-array, inclusive.
+   * @param middle The end of the first sub-array, exclusive, and the
+   *               start of the second, inclusive.
+   * @param end The end of the second sub-array, exclusive.
    */
-  @SuppressWarnings({ "unchecked" })
-  private T[] merge(T[] firstSlice, T[] secondSlice) {
-    T[] sorted = (T[]) new Object[firstSlice.length + secondSlice.length];
-    int usedFirst = 0;
-    int usedSecond = 0;
-    for (int index = 0; index < sorted.length; index++) {
-      if (usedFirst == firstSlice.length) {
-        sorted[index] = secondSlice[usedSecond++];
-      } else if (usedSecond == secondSlice.length) {
-        sorted[index] = firstSlice[usedFirst++];
+  private void merge(T[] values, T[] output, int start, int middle, int end) {
+    int atFirst = start;
+    int atSecond = middle;
+    for (int index = start; index < end; index++) {
+      if (atFirst == middle) {
+        output[index] = values[atSecond++];
+      } else if (atSecond == end) {
+        output[index] = values[atFirst++];
       } else {
-        if (this.order.compare(firstSlice[usedFirst], secondSlice[usedSecond]) <= 0) {
-          sorted[index] = firstSlice[usedFirst++];
+        if (this.order.compare(values[atFirst], values[atSecond]) <= 0) {
+          output[index] = values[atFirst++];
         } else {
-          sorted[index] = secondSlice[usedSecond++];
+          output[index] = values[atSecond++];
         } // if-else
       } // if-else
     } // for
-    return sorted;
   } // merge(T[], T[])
 
   /**
@@ -73,17 +75,19 @@ public class MergeSorter<T> implements Sorter<T> {
    * @param values The full array to sort.
    * @param start The first index to sort, inclusive.
    * @param end The last index to sort, exclusive.
-   *
-   * @return A new, sorted array.
+   * @param output The array to be used for output.
    */
-  @SuppressWarnings({ "unchecked" })
-  private T[] sortSlice(T[] values, int start, int end) {
-    if ((end - start) == 1) {
-      // The slice is just one element, so it is sorted.
-      return (T[]) new Object[] {values[start]};
-    } else if ((end - start) == 0) {
-      // The slice is empty, so it is sorted.
-      return (T[]) new Object[0];
+  private void sortSlice(T[] values, int start, int end, T[] output) {
+    if ((end - start) < 2) {
+      // The slice has fewer than two elements, so it is sorted.
+      System.arraycopy(
+              values,
+              start,
+              output,
+              start,
+              end - start
+      );
+      return;
     } // if
 
     int middle = start / 2 + end / 2;
@@ -91,10 +95,10 @@ public class MergeSorter<T> implements Sorter<T> {
       // We need to make an adjustment if they are both odd.
       middle++;
     } // if
-    T[] firstSlice = this.sortSlice(values, start, middle);
-    T[] secondSlice = this.sortSlice(values, middle, end);
+    this.sortSlice(output, start, middle, values);
+    this.sortSlice(output, middle, end, values);
 
-    return this.merge(firstSlice, secondSlice);
+    this.merge(values, output, start, middle, end);
   } // sortSlice(T[], int, int)
 
   /**
@@ -112,13 +116,7 @@ public class MergeSorter<T> implements Sorter<T> {
    */
   @Override
   public void sort(T[] values) {
-    T[] sorted = this.sortSlice(values, 0, values.length);
-    System.arraycopy(
-            sorted,
-            0,
-            values,
-            0,
-            sorted.length
-    );
+    T[] valuesCopy = Arrays.copyOf(values, values.length);
+    this.sortSlice(valuesCopy, 0, values.length, values);
   } // sort(T[])
 } // class MergeSorter
