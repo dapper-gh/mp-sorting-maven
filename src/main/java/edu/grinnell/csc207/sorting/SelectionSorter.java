@@ -42,6 +42,22 @@ public class SelectionSorter<T> implements Sorter<T> {
   // +---------+
 
   /**
+   * Selects the smallest element in a subarray. Assumes that all elements before it are sorted.
+   * @param values The array in which to search.
+   * @param firstIndex The first index of the sub-array.
+   * @return The index of the smallest element in the sub-array.
+   */
+  private int select(T[] values, int firstIndex) {
+    int min = firstIndex - 1;
+    for (int candidate = firstIndex; candidate < values.length; candidate++) {
+      if (this.order.compare(values[min], values[candidate]) > 0) {
+        min = candidate;
+      } // if
+    } // for
+    return min;
+  } // select(T[], int)
+
+  /**
    * Sort an array in place using selection sort.
    *
    * @param values
@@ -60,12 +76,7 @@ public class SelectionSorter<T> implements Sorter<T> {
     // since if there is only one unsorted element at the end,
     // the array is sorted.
     for (int unprocessedStart = 0; unprocessedStart < values.length - 1; unprocessedStart++) {
-      int min = unprocessedStart;
-      for (int candidate = unprocessedStart + 1; candidate < values.length; candidate++) {
-        if (this.order.compare(values[min], values[candidate]) > 0) {
-          min = candidate;
-        } // if
-      } // for
+      int min = this.select(values, unprocessedStart + 1);
       T oldValue = values[unprocessedStart];
       values[unprocessedStart] = values[min];
       values[min] = oldValue;
