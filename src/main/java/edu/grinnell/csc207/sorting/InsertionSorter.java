@@ -42,6 +42,22 @@ public class InsertionSorter<T> implements Sorter<T> {
   // +---------+
 
   /**
+   * Inserts a value into its proper place in the section before it.
+   * @param values The array to modify.
+   * @param toInsert The index of the value to insert.
+   */
+  private void insert(T[] values, int toInsert) {
+    T value = values[toInsert];
+    for (int index = toInsert - 1; index >= 0; index--) {
+      if (this.order.compare(value, values[index]) >= 0) {
+        break;
+      } // if
+      values[index + 1] = values[index];
+      values[index] = value;
+    } // for
+  } // insert(T[], int)
+
+  /**
    * Sort an array in place using insertion sort.
    *
    * @param values
@@ -58,14 +74,7 @@ public class InsertionSorter<T> implements Sorter<T> {
   public void sort(T[] values) {
     // We can start at index 1, since the first iteration of insertion sort will do nothing.
     for (int unprocessedStart = 1; unprocessedStart < values.length; unprocessedStart++) {
-      T value = values[unprocessedStart];
-      for (int index = unprocessedStart - 1; index >= 0; index--) {
-        if (this.order.compare(value, values[index]) >= 0) {
-          break;
-        } // if
-        values[index + 1] = values[index];
-        values[index] = value;
-      } // for
+      this.insert(values, unprocessedStart);
     } // for
   } // sort(T[])
 } // class InsertionSorter
