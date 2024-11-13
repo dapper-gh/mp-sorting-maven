@@ -42,6 +42,33 @@ public class MergeSorter<T> implements Sorter<T> {
   // +---------+
 
   /**
+   * Merges two sorted arrays into one.
+   * @param firstSlice The first array to merge.
+   * @param secondSlice The second array to merge.
+   * @return A sorted array composed of all the elements from each array.
+   */
+  @SuppressWarnings({ "unchecked" })
+  private T[] merge(T[] firstSlice, T[] secondSlice) {
+    T[] sorted = (T[]) new Object[firstSlice.length + secondSlice.length];
+    int usedFirst = 0;
+    int usedSecond = 0;
+    for (int index = 0; index < sorted.length; index++) {
+      if (usedFirst == firstSlice.length) {
+        sorted[index] = secondSlice[usedSecond++];
+      } else if (usedSecond == secondSlice.length) {
+        sorted[index] = firstSlice[usedFirst++];
+      } else {
+        if (this.order.compare(firstSlice[usedFirst], secondSlice[usedSecond]) <= 0) {
+          sorted[index] = firstSlice[usedFirst++];
+        } else {
+          sorted[index] = secondSlice[usedSecond++];
+        } // if-else
+      } // if-else
+    } // for
+    return sorted;
+  } // merge(T[], T[])
+
+  /**
    * Sorts a slice of an array out of place.
    * @param values The full array to sort.
    * @param start The first index to sort, inclusive.
@@ -67,23 +94,7 @@ public class MergeSorter<T> implements Sorter<T> {
     T[] firstSlice = this.sortSlice(values, start, middle);
     T[] secondSlice = this.sortSlice(values, middle, end);
 
-    T[] sorted = (T[]) new Object[end - start];
-    int usedFirst = 0;
-    int usedSecond = 0;
-    for (int index = 0; index < sorted.length; index++) {
-      if (usedFirst == firstSlice.length) {
-        sorted[index] = secondSlice[usedSecond++];
-      } else if (usedSecond == secondSlice.length) {
-        sorted[index] = firstSlice[usedFirst++];
-      } else {
-        if (this.order.compare(firstSlice[usedFirst], secondSlice[usedSecond]) <= 0) {
-          sorted[index] = firstSlice[usedFirst++];
-        } else {
-          sorted[index] = secondSlice[usedSecond++];
-        } // if-else
-      } // if-else
-    } // for
-    return sorted;
+    return this.merge(firstSlice, secondSlice);
   } // sortSlice(T[], int, int)
 
   /**
